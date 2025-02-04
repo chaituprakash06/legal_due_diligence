@@ -1,5 +1,11 @@
 import { NextResponse } from 'next/server';
 
+interface FileInfo {
+    name: string;
+    type: string;
+    size: number;
+  }
+
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
