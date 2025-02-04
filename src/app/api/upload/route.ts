@@ -1,19 +1,22 @@
 import { NextResponse } from 'next/server';
 
+type FileData = {
+  name: string;
+  type: string;
+  size: number;
+};
+
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
-    const files = formData.getAll('files');
+    const files = formData.getAll('files') as File[];
 
-    // Just process file metadata for now
-    const filesInfo = files.map((file: any) => ({
+    // Process file metadata
+    const filesInfo: FileData[] = files.map((file) => ({
       name: file.name,
       type: file.type,
       size: file.size
     }));
-
-    // Later: Add cloud storage integration here
-    // e.g., AWS S3, Google Cloud Storage, etc.
 
     return NextResponse.json(
       { 
@@ -23,8 +26,13 @@ export async function POST(request: Request) {
       { status: 200 }
     );
 
-  } catch (error) {
-    console.error('Upload error:', error);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('Upload error:', error.message);
+    } else {
+      console.error('Unknown upload error occurred');
+    }
+
     return NextResponse.json(
       { error: 'Failed to process files' },
       { status: 500 }
